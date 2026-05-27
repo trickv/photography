@@ -1,0 +1,8 @@
+# Source photos and watermarked outputs — not version-controlled
+*.JPG
+*.jpg
+*.jpeg
+*_wm.png
+
+# macOS cruft
+.DS_Store
