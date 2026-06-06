@@ -2,6 +2,8 @@
 *.JPG
 *.jpg
 *.jpeg
+*.HEIC
+*.heic
 *_wm.png
 
 # macOS cruft
