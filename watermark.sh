@@ -11,7 +11,17 @@
 
 set -euo pipefail
 
-WATERMARK="brand1.png"
+# Resolve this script's real directory, even when invoked via a symlink (e.g.
+# from ~/bin), so the branding image is found regardless of the working dir.
+src="${BASH_SOURCE[0]}"
+while [ -h "$src" ]; do
+  dir="$(cd -P "$(dirname "$src")" && pwd)"
+  src="$(readlink "$src")"
+  case "$src" in /*) ;; *) src="$dir/$src";; esac
+done
+SCRIPT_DIR="$(cd -P "$(dirname "$src")" && pwd)"
+
+WATERMARK="${WATERMARK:-$SCRIPT_DIR/brand1.png}"
 SUFFIX="_wm"
 MARGIN_PCT="${MARGIN_PCT:-1.5}"   # extra inset from the edges, as % of photo width
 WIDTH_PCT="${WIDTH_PCT:-}"        # watermark width as % of photo width; empty = native size
