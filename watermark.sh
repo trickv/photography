@@ -40,7 +40,9 @@ else
 fi
 
 for photo in "${photos[@]}"; do
-  read -r pw ph < <(magick identify -format "%w %h\n" "$photo")
+  # Read dimensions after honoring any EXIF orientation, so they match how the
+  # photo is actually displayed (a rotated original reports swapped raw dims).
+  read -r pw ph < <(magick "$photo" -auto-orient -format "%w %h\n" info:)
 
   # Margin in pixels (same offset on x and y, derived from width for consistency).
   margin=$(printf '%.0f' "$(echo "$pw * $MARGIN_PCT / 100" | bc -l)")
@@ -55,7 +57,10 @@ for photo in "${photos[@]}"; do
 
   out="${photo%.*}${SUFFIX}.${photo##*.}"
 
-  magick "$photo" \
+  # -auto-orient bakes the EXIF rotation into the pixels before compositing, so
+  # the watermark lands in the real bottom-right corner upright. The output is
+  # then normalized to TopLeft, avoiding a double rotation in EXIF-aware viewers.
+  magick "$photo" -auto-orient \
     \( "$WATERMARK" ${wm_resize[@]+"${wm_resize[@]}"} \) \
     -gravity southeast -geometry "+${margin}+${margin}" \
     -compose over -composite \
